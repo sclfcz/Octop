@@ -83,6 +83,8 @@ export interface ProviderRow {
   stream_usage?: boolean;
   /** UI lane: embedding providers are managed on the embedding Models tab. */
   purpose?: "chat" | "embedding";
+  /** Saved default. null means cleared; omitted falls back to models[0]. */
+  default_model?: string | null;
 }
 
 /** True when this provider belongs on the embedding Models tab. */
@@ -91,6 +93,16 @@ export function isEmbeddingProvider(provider: ProviderRow): boolean {
   const models = provider.models ?? [];
   if (models.length === 0) return false;
   return models.every((model) => isEmbeddingModel(model));
+}
+
+export function providerDefaultModelId(provider: {
+  default_model?: string | null;
+  models?: { id: string }[] | null;
+}): string {
+  if (provider.default_model !== undefined) {
+    return provider.default_model?.trim() || "";
+  }
+  return provider.models?.length ? provider.models[0].id : "";
 }
 
 export interface UseProvidersResult {
